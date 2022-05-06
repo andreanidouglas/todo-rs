@@ -4,7 +4,7 @@ pipeline {
         stages  {
                  stage("Test") {
                         steps {
-                                sh '/home/jenkins/.cargo/bin/cargo test -- test-threads=1'
+                                sh 'cargo test -- data_mod_ --test-threads=1'
                         }
                 }
       
