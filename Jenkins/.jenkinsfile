@@ -1,12 +1,18 @@
 pipeline {
         agent any
 
-        stages {
+        stages  {
+                 stage("Test") {
+                        steps {
+                                sh '/home/jenkins/.cargo/bin/cargo test -- test-threads=1'
+                        }
+                }
+      
                 stage("Build") {
                         steps {
-                                sh 'cargo build'
-                                sh 'cargo test -- test-threads=1'
+                                sh '/home/jenkins/.cargo/bin/cargo build --release'
                         }
                 }
         }
+
 }
