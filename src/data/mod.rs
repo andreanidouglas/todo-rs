@@ -10,7 +10,7 @@ pub mod todo;
 pub type Db = Pool<Postgres>;
 
 pub async fn new_db() -> Result<Db, sqlx::Error> {
-   let pool = Pool::<Postgres>::connect("postgres://postgres:pgsql@localhost:5432/postgres").await?;
+   let pool = Pool::<Postgres>::connect("postgres://postgres:pgsql@192.168.100.227:5432/postgres").await?;
     Ok(pool)
 }
 
