@@ -4,7 +4,7 @@ pipeline {
         stages  {
                 stage("Init"){
                         steps {
-                                sh 'docker run -n pg -e POSTGRES_PASSWORD=insecurepassword -d postgres:alpine'
+                                sh 'docker run --name pg -e POSTGRES_PASSWORD=insecurepassword -d postgres:alpine'
                         }
                 }
                 stage("Database") {
