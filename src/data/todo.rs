@@ -60,19 +60,6 @@ mod tests {
     use super::*;
     use crate::data::new_db;
 
-    #[tokio::test]
-    async fn data_mod_todo_list_all() {
-        let db = new_db().await.expect("could not create new db");
-
-        let rec = TodoMac::list(&db).await;
-        match rec {
-            Ok(r) => assert_eq!(2, r.len()),
-            Err(e) => {
-                eprintln!("could not execute todo query: {:?}", e);
-                assert!(false);
-            },
-        }
-    }
 
     #[tokio::test]
     async fn data_mod_todo_create() {
