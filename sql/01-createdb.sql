@@ -1,4 +1,3 @@
-CREATE DATABASE todo;
 
 CREATE USER todo_user WITH PASSWORD 'todo_password';
 GRANT ALL PRIVILEGES ON DATABASE todo to todo_user;

@@ -9,13 +9,15 @@ pipeline {
                 }
                 stage("Database") {
                         steps {
-                                sh 'set -e && docker exec pg psql postgresql://postgres:insecurepassword@pg/postgres -c  "$(cat sql/00-initdb.sql)" && 
-                                docker exec pg psql postgresql://postgres:insecurepassword@pg/postgres -c  "$(cat sql/01-createdb.sql)'
+                                sh 'set -e && \
+                                docker exec pg psql postgresql://postgres:insecurepassword@pg/postgres -c "CREATE DATABASE todo;" && \
+                                docker exec pg psql postgresql://postgres:insecurepassword@pg/postgres -c  "$(cat sql/00-initdb.sql)" && \
+                                docker exec pg psql postgresql://postgres:insecurepassword@pg/postgres -c  "$(cat sql/01-createdb.sql)"'
                         }
                 }
                 stage("Test") {
                         steps {
-                                sh 'cargo test -- data_mod_ --test-threads=1'
+                                sh 'cargo test -- data_mod_ '
                         }
                 }
       
