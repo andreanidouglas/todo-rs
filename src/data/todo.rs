@@ -58,12 +58,11 @@ impl TodoMac {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::data::{init_db, new_db};
+    use crate::data::new_db;
 
     #[tokio::test]
     async fn data_mod_todo_list_all() {
         let db = new_db().await.expect("could not create new db");
-        init_db(&db).await.expect("could not initialize db");
 
         let rec = TodoMac::list(&db).await;
         match rec {
@@ -80,7 +79,6 @@ mod tests {
         let c = TodoNew {title: "Hello".to_string(), description: "This is a todo description".to_string()};
 
         let db = new_db().await.expect("could not create new db");
-        init_db(&db).await.expect("could not initialize db");
 
         let rec = TodoMac::create(&db, c).await;
         match rec {

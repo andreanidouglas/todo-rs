@@ -1,7 +1,7 @@
 use std::process::exit;
 
 
-use data::{init_db, new_db};
+use data::new_db;
 use data::todo::{TodoMac, TodoNew};
 
 mod data;
@@ -17,15 +17,16 @@ async fn main() {
     };
 
 
-    init_db(&db).await.unwrap_or_else(|e| {
-        eprintln!("could not initialize database: {:?}", e);
-    });
 
-    let new = TodoNew { title: "New Task".to_string(), description: "This is the description of the new task".to_string() } ;
-    let tdm_execute = TodoMac::create(&db, new).await.unwrap_or_else(|e| {
+    let new_task = TodoNew { title: "New Task".to_string(), description: "This is the description of the new task".to_string() } ;
+    let tdm_execute: u64 = TodoMac::create(&db, new_task).await.unwrap_or_else(|e| {
         eprintln!("error executing create: {:?}", e);
         0
     });
+
+
+
+    
 
     if tdm_execute == 0 {
         eprintln!("failed to create record");
