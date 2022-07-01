@@ -26,11 +26,11 @@ pipeline {
                                 sh '/home/jenkins/.cargo/bin/cargo build --release'
                         }
                 }
-                stage("Destroy") {
-                        steps {
-                                sh 'docker stop pg && docker rm pg'
-                        }
+               
+        } 
+        post {
+                always {
+                        sh 'docker stop pg; docker rm pg'
                 }
         }
-
-}
+ }
