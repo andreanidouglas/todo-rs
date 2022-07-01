@@ -9,7 +9,7 @@ pipeline {
                 }
                 stage("Database") {
                         steps {
-                                sh 'set -e && docker exec pg psql postgresql://postgres:insecurepassword/postgres -a -q -f sql/01-todo_tables.sql'
+                                sh 'set -e && docker exec pg psql postgresql://postgres:insecurepassword@pg/postgres -a -q -f sql/01-todo_tables.sql'
                         }
                 }
                 stage("Test") {
