@@ -4,12 +4,12 @@ pipeline {
         stages  {
                 stage("Init"){
                         steps {
-                                sh 'docker run --name pg -e POSTGRES_PASSWORD=insecurepassword -d postgres:alpine'
+                                sh 'docker run --network jenkins-agent_default --name pg -e POSTGRES_PASSWORD=insecurepassword -d postgres:alpine'
                         }
                 }
                 stage("Database") {
                         steps {
-                                sh 'set -e && docker exec pg psql postgresql://postgres:insecurepassword@localhost/postgres -a -q -f sql/01-todo_tables.sql'
+                                sh 'set -e && docker exec pg psql postgresql://postgres:insecurepassword@pg/postgres -a -q -f sql/01-todo_tables.sql'
                         }
                 }
                 stage("Test") {
