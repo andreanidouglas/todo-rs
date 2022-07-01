@@ -9,7 +9,8 @@ pipeline {
                 }
                 stage("Database") {
                         steps {
-                                sh 'set -e && docker exec pg psql postgresql://postgres:insecurepassword@pg/postgres -c  "$(cat sql/00-initdb.sql)"'
+                                sh 'set -e && docker exec pg psql postgresql://postgres:insecurepassword@pg/postgres -c  "$(cat sql/00-initdb.sql)" && 
+                                docker exec pg psql postgresql://postgres:insecurepassword@pg/postgres -c  "$(cat sql/01-createdb.sql)'
                         }
                 }
                 stage("Test") {
