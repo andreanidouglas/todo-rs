@@ -20,6 +20,13 @@ pub struct TodoNew {
     pub description: String,
 }
 
+pub struct TodoUpdate {
+    pub id: i64,
+    pub title: String,
+    pub description: String,
+    pub status: String 
+}
+
 const TABLE: &str = "todos";
 
 impl TodoMac {
@@ -51,6 +58,17 @@ impl TodoMac {
         Ok(x.execute(db).await?.rows_affected())
     }
 
+    pub async fn update(db: &Db, data: TodoUpdate) -> Result<u64, sqlx::Error> {
+        let query = format!("UPDATE {} SET title = $1, description = $2, status=$3 WHERE id = $4", TABLE);
+        let x = sqlx::query(&query)
+            .bind(data.title.to_string())
+            .bind(data.description)
+            .bind(data.status)
+            .bind(data.id);
+
+        Ok(x.execute(db).await?.rows_affected())
+    }
+
 }
 
 
@@ -75,5 +93,29 @@ mod tests {
                 assert!(false);
             }
         }
+    }
+
+    #[tokio::test]
+    async fn data_mod_todo_update() {
+        let c = TodoUpdate { title: "Updated".to_string(), description: "This is an updated description".to_string(),
+            status: "CLOSED".to_string(), id: 1000 };
+        let db = new_db().await.expect("could not create new db");
+
+        let rec = TodoMac::update(&db, c).await;
+        match rec {
+            Ok(x) => {
+                assert_eq!(x, 1);
+                let sql = "SELECT * FROM todos WHERE id = 1000";
+                let record: Result<Todo, sqlx::Error> = sqlx::query_as(sql).fetch_one(&db).await;
+                if let Ok(x) = record {
+                    assert!(x.status == "CLOSED".to_string() && x.title == "Updated".to_string())
+                }
+            }
+            Err(e) => {
+                eprintln!("could not execute todo query: {:?}", e);
+                assert!(false);
+            }
+        }
+
     }
 }
