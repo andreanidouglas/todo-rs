@@ -1,11 +1,12 @@
 use std::time::SystemTime;
 
 use super::Db;
+use serde::{Serialize, Deserialize};
 use sqlx::FromRow;
 
 pub struct TodoMac;
 
-#[derive(Default, Debug, FromRow)]
+#[derive(Default, FromRow, Serialize, Deserialize)]
 pub struct Todo {
     id: i64,
     title: String,
@@ -15,13 +16,14 @@ pub struct Todo {
     created: i64,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct TodoNew {
     pub title: String,
     pub description: String,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct TodoUpdate {
-    pub id: i64,
     pub title: String,
     pub description: String,
     pub status: String 
@@ -58,13 +60,13 @@ impl TodoMac {
         Ok(x.execute(db).await?.rows_affected())
     }
 
-    pub async fn update(db: &Db, data: TodoUpdate) -> Result<u64, sqlx::Error> {
+    pub async fn update(db: &Db, id: i64, data: TodoUpdate) -> Result<u64, sqlx::Error> {
         let query = format!("UPDATE {} SET title = $1, description = $2, status=$3 WHERE id = $4", TABLE);
         let x = sqlx::query(&query)
             .bind(data.title.to_string())
             .bind(data.description)
             .bind(data.status)
-            .bind(data.id);
+            .bind(id);
 
         Ok(x.execute(db).await?.rows_affected())
     }
@@ -98,10 +100,10 @@ mod tests {
     #[tokio::test]
     async fn data_mod_todo_update() {
         let c = TodoUpdate { title: "Updated".to_string(), description: "This is an updated description".to_string(),
-            status: "CLOSED".to_string(), id: 1000 };
+            status: "CLOSED".to_string() };
         let db = new_db().await.expect("could not create new db");
 
-        let rec = TodoMac::update(&db, c).await;
+        let rec = TodoMac::update(&db, 1000, c).await;
         match rec {
             Ok(x) => {
                 assert_eq!(x, 1);
