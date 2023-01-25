@@ -4,7 +4,7 @@ pipeline {
         stages  {
                 stage("Init"){
                         steps {
-                                sh 'docker run --network jenkins-agent_default --name pg -e POSTGRES_PASSWORD=insecurepassword -d postgres:alpine && sleep 5'
+                                sh 'docker run --network jenkins-agent_default --name pg -e POSTGRES_PASSWORD=insecurepassword -d postgres:alpine && sleep 15'
                         }
                 }
                 stage("Database") {
