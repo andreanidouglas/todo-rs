@@ -1,2 +1,3 @@
-# todo-rs
-a simple todo app build with rust
+# Todo
+
+A simple API for managing a Todo list

@@ -1,3 +1,5 @@
+use std::net::TcpListener;
+
 use actix_web::{
     dev::Server, get, middleware, patch, post, web, App, HttpResponse, HttpServer, Responder,
 };
@@ -17,10 +19,8 @@ async fn todos() -> impl Responder {
     let todos = TodoMac::list(&db)
         .await
         .expect("could not query database for todos");
-    format!(
-        "{}",
-        serde_json::to_string(&todos).expect("could not deserialize result")
-    )
+
+    serde_json::to_string(&todos).expect("could not deserialize result")
 }
 
 #[post("/api/todos/")]
@@ -50,25 +50,19 @@ async fn health_check() -> impl Responder {
     HttpResponse::Ok()
 }
 
-#[get("/")]
-async fn hello() -> impl Responder {
-    format!("Hello World")
-}
-
-pub fn run() -> Result<Server, std::io::Error> {
+pub fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
     let server = HttpServer::new(|| {
         App::new()
             .wrap(middleware::Logger::default())
             .app_data(web::JsonConfig::default().limit(4096))
-            .service(hello)
             .service(health_check)
             .service(new_todos)
             .service(todos)
             .service(update_todos)
     })
-    .bind(("0.0.0.0", 8080))?
+    .listen(listener)?
     .run();
 
     Ok(server)
