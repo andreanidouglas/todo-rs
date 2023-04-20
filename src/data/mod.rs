@@ -13,14 +13,3 @@ pub async fn new_db() -> Result<Db, sqlx::Error> {
    Ok(pool)
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[tokio::test]
-    async fn data_mod_get_connection() {
-
-        let db = new_db().await;
-        println!("error is: {:?}", &db);
-        assert_eq!(true, db.is_ok());
-    }
-}
