@@ -2,15 +2,20 @@
 name = "todo-rust"
 version = "0.1.0"
 edition = "2021"
+repository = "https://github.com/andreanidouglas/todo-rs"
+authors = ["Douglas Andreani"]
+description = "A simple API for managing a Todo list"
+readme = "README.md"
+license-file = "LICENSE"
 
 [lib]
 path = "src/lib.rs"
 
 [[bin]]
 name = "todo-rust"
+path = "src/main.rs"
 
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 sqlx = { version = "^0.6", features = [ "runtime-tokio-native-tls" , "postgres" ] }
