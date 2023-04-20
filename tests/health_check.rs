@@ -1,5 +1,4 @@
-
-
+#[allow(clippy::let_underscore_future)]
 fn spawn_app() {
     let server = todo_rust::run().expect("failed to bind address");
 
@@ -8,7 +7,6 @@ fn spawn_app() {
 
 #[tokio::test]
 async fn health_check_should_return_ok() {
-
     spawn_app();
 
     let client = reqwest::Client::new();
@@ -20,5 +18,4 @@ async fn health_check_should_return_ok() {
 
     assert!(response.status().is_success());
     assert_eq!(Some(0), response.content_length());
-    
 }
