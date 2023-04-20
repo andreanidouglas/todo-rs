@@ -2,35 +2,29 @@ pipeline {
         agent any
 
         stages  {
-                stage("Init"){
-                        steps {
-                                sh 'docker run --network jenkins-agent_default --name pg -e POSTGRES_PASSWORD=insecurepassword -d postgres:alpine && sleep 15'
-                        }
-                }
-                stage("Database") {
-                        steps {
-                                sh 'set -e && \
-                                docker exec pg psql postgresql://postgres:insecurepassword@pg/postgres -c "CREATE DATABASE todo;" && \
-                                docker exec pg psql postgresql://postgres:insecurepassword@pg/postgres -c  "$(cat sql/00-initdb.sql)" && \
-                                docker exec pg psql postgresql://postgres:insecurepassword@pg/postgres -c  "$(cat sql/01-createdb.sql)"'
-                        }
-                }
                 stage("Test") {
                         steps {
-                                sh 'cargo test -- data_mod_ '
+                                sh '/home/jenkins/.cargo/bin/cargo test'
                         }
                 }
       
+                stage("Clippy") {
+                        steps {
+                                sh '/home/jenkins/.cargo/bin/cargo clippy -- -D warnings'
+                        }
+                }
+
+                stage("RustFmt") {
+                        steps {
+                                sh '/home/jenkins/.cargo/bin/cargo fmt --check'
+                        }
+                }
+
                 stage("Build") {
                         steps {
                                 sh '/home/jenkins/.cargo/bin/cargo build --release'
                         }
                 }
                
-        } 
-        post {
-                always {
-                        sh 'docker stop pg; docker rm pg'
-                }
         }
  }
