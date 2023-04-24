@@ -1,48 +1,19 @@
 use std::net::TcpListener;
 
-use actix_web::{
-    dev::Server, get, middleware, patch, post, web, App, HttpResponse, HttpServer, Responder,
-};
-use data::todo::TodoUpdate;
+use actix_web::{dev::Server, get, post, web, App, HttpResponse, HttpServer, Responder};
+use serde::{Deserialize, Serialize};
 
-use crate::data::{
-    new_db,
-    todo::{TodoMac, TodoNew},
-};
-
-mod data;
-
-#[get("/api/todos")]
-async fn todos() -> impl Responder {
-    let db = new_db().await.expect("could not connect to database");
-
-    let todos = TodoMac::list(&db)
-        .await
-        .expect("could not query database for todos");
-
-    serde_json::to_string(&todos).expect("could not deserialize result")
+#[derive(Serialize, Deserialize)]
+pub struct Todo {
+    pub item: String,
+    pub completed: bool,
 }
 
-#[post("/api/todos/")]
-async fn new_todos(item: web::Json<TodoNew>) -> HttpResponse {
-    let db = new_db().await.expect("could not connect to database");
+#[post("/api/todos")]
+async fn new_todos(_item: web::Json<Todo>) -> impl Responder {
+    //let db = new_db().await.expect("could not connect to database");
 
-    let todo_new = TodoMac::create(&db, item.0)
-        .await
-        .expect("could not insert into the database");
-
-    HttpResponse::Ok().json(todo_new)
-}
-
-#[patch("/api/todos/{id}")]
-async fn update_todos(item: web::Json<TodoUpdate>, id: web::Path<i64>) -> HttpResponse {
-    let db = new_db().await.expect("could not connect to database");
-
-    let todo_update = TodoMac::update(&db, *id, item.0)
-        .await
-        .expect("could not update item");
-
-    HttpResponse::Ok().json(todo_update)
+    HttpResponse::Ok().finish()
 }
 
 #[get("/health_check")]
@@ -51,16 +22,11 @@ async fn health_check() -> impl Responder {
 }
 
 pub fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-
     let server = HttpServer::new(|| {
         App::new()
-            .wrap(middleware::Logger::default())
             .app_data(web::JsonConfig::default().limit(4096))
             .service(health_check)
             .service(new_todos)
-            .service(todos)
-            .service(update_todos)
     })
     .listen(listener)?
     .run();
