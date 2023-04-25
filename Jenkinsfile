@@ -2,6 +2,12 @@ pipeline {
         agent any
 
         stages  {
+
+                stage("DB_setup") {
+                    steps {
+                        sh './scripts/init_db.sh && /home/jenkins/.cargo/bin/cargo install sqlx-cli'
+                    }
+                }
                 stage("Test") {
                         steps {
                                 sh '/home/jenkins/.cargo/bin/cargo test'
@@ -26,5 +32,10 @@ pipeline {
                         }
                 }
                
+        }
+        post {
+            always {
+                docker rm -f pg
+            }
         }
  }
