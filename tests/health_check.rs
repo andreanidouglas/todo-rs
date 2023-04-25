@@ -1,12 +1,14 @@
 use std::net::TcpListener;
 
-use sqlx::{PgPool, PgConnection, Connection, Executor};
-use todo_rust::{configuration::{get_configuration, DatabaseSettings}, startup::run};
+use sqlx::{Connection, Executor, PgConnection, PgPool};
+use todo_rust::{
+    configuration::{get_configuration, DatabaseSettings},
+    startup::run,
+};
 use uuid::Uuid;
 
-
 pub struct TestApp {
-    pub address: String, 
+    pub address: String,
     pub db_pool: PgPool,
 }
 
@@ -15,37 +17,32 @@ async fn spawn_app() -> TestApp {
     let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
     let port = listener.local_addr().unwrap().port();
     let address = format!("http://127.0.0.1:{}", port);
-    
+
     let mut configuration = get_configuration().expect("failed to read configuration");
     configuration.database.database_name = Uuid::new_v4().to_string();
-    
-    let connection_pool = configure_database(&configuration.database).await;
 
+    let connection_pool = configure_database(&configuration.database).await;
 
     let server = run(listener, connection_pool.clone()).expect("failed to bind address");
 
     let _ = tokio::spawn(server);
 
-
     TestApp {
         address,
-        db_pool: connection_pool
+        db_pool: connection_pool,
     }
-    
 }
 
 pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
-    let mut connection = PgConnection::connect(
-            &config.connection_string_without_db()
-        )
+    let mut connection = PgConnection::connect(&config.connection_string_without_db())
         .await
         .expect("failed to connect to postgres");
 
+    connection
+        .execute(format!(r#"CREATE DATABASE "{}";"#, config.database_name).as_str())
+        .await
+        .expect("failed to create database");
 
-    connection.execute(format!(r#"CREATE DATABASE "{}";"#, config.database_name).as_str())
-    .await
-    .expect("failed to create database");
-    
     let connection_pool = PgPool::connect(&config.connection_string())
         .await
         .expect("failed to connect to postgres");
@@ -75,7 +72,6 @@ async fn health_check_should_return_ok() {
 
 #[tokio::test]
 async fn post_todo_returns_400_if_data_is_missing() {
-    
     let app = spawn_app().await;
     let client = reqwest::Client::new();
 
@@ -105,7 +101,6 @@ async fn post_todo_returns_400_if_data_is_missing() {
 
 #[tokio::test]
 async fn post_todo_returns_200_for_valid_data() {
-
     let app = spawn_app().await;
     let client = reqwest::Client::new();
 
@@ -121,7 +116,6 @@ async fn post_todo_returns_200_for_valid_data() {
 
     assert_eq!(200, response.status().as_u16());
 
-
     let saved = sqlx::query!("SELECT name, completed from todos",)
         .fetch_one(&app.db_pool)
         .await
@@ -129,5 +123,4 @@ async fn post_todo_returns_200_for_valid_data() {
 
     assert_eq!("ok test case", saved.name);
     assert_eq!(true, saved.completed);
-
 }
