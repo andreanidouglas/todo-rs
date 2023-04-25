@@ -13,6 +13,7 @@ if ! [ -x "$(command -v sqlx)" ]; then
     exit 1
 fi
 
+DB_NETWORK="${DOCKER_NETWORK:=default}"
 DB_NAME=${DOCKER_NAME:=pg}
 DB_USER=${POSTGRES_USER:=postgres}
 DB_PASSWORD="${POSTGRES_PASSWORD:=password}"
@@ -27,7 +28,8 @@ if [[ -z "${SKIP_DOCKER}" ]]; then
         -e POSTGRES_PASSWORD=${DB_PASSWORD} \
         -e POSTGRES_DB=${DB_NAME} \
         -p "${DB_PORT}":5432 \
-        --name "${DB_NAME}" \
+        --name "${DB_HOST}" \
+        --network "${DB_NETWORK}" \
         -d postgres \
         postgres -N 1000
 
@@ -43,6 +45,8 @@ done
 
 DATABASE_URL="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
 export DATABASE_URL
+
+echo "DATABASE_URL=$DATABASE_URL" > .env
 
 sqlx database create
 sqlx migrate run

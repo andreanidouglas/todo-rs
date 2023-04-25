@@ -5,7 +5,7 @@ pipeline {
 
                 stage("DB_setup") {
                     steps {
-                        sh './scripts/init_db.sh && /home/jenkins/.cargo/bin/cargo install sqlx-cli'
+                        sh '/home/jenkins/.cargo/bin/cargo install sqlx-cli && POSTGRES_HOST=pg DOCKER_NETWORK=jenkins-agent_default ./scripts/init_db.sh'
                     }
                 }
                 stage("Test") {
