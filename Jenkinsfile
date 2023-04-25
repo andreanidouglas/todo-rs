@@ -35,7 +35,7 @@ pipeline {
         }
         post {
             always {
-                docker rm -f pg
+                sh 'docker rm -f pg'
             }
         }
  }
