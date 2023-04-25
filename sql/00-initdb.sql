@@ -1,3 +1,0 @@
-DROP USER IF EXISTS todo_user;
-DROP TABLE IF EXISTS todos;
-
