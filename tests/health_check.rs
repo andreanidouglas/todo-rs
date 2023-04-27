@@ -21,6 +21,11 @@ async fn spawn_app() -> TestApp {
     let mut configuration = get_configuration().expect("failed to read configuration");
     configuration.database.database_name = Uuid::new_v4().to_string();
 
+    if std::env::var("DOCKER_BUILD").is_ok() {
+        configuration.database.host = std::env::var("POSTGRES_HOST")
+            .expect("docker build must have $POSTGRES_HOST explicit variable");
+    }
+
     let connection_pool = configure_database(&configuration.database).await;
 
     let server = run(listener, connection_pool.clone()).expect("failed to bind address");

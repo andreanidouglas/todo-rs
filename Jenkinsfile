@@ -1,11 +1,17 @@
 pipeline {
         agent any
 
+        environment {
+                POSTGRES_HOST = 'pg'
+                DOCKER_BUILD = 'true'
+                DOCKER_NETWORK = 'jenkins-agent_default'
+        }
+
         stages  {
 
                 stage("DB_setup") {
                     steps {
-                        sh '/home/jenkins/.cargo/bin/cargo install sqlx-cli && POSTGRES_HOST=pg DOCKER_NETWORK=jenkins-agent_default ./scripts/init_db.sh'
+                        sh '/home/jenkins/.cargo/bin/cargo install sqlx-cli &&  ./scripts/init_db.sh'
                     }
                 }
                 stage("Test") {
@@ -35,7 +41,7 @@ pipeline {
         }
         post {
             always {
-                sh 'docker rm -f pg'
+                sh 'docker rm -f ${DB_ENGINE}'
             }
         }
  }
