@@ -11,7 +11,8 @@ pipeline {
 
                 stage("DB_setup") {
                     steps {
-                        sh '/home/jenkins/.cargo/bin/cargo install sqlx-cli &&  ./scripts/init_db.sh'
+                        sh '/home/jenkins/.cargo/bin/cargo install sqlx-cli'
+                        sh './scripts/init_db.sh'
                     }
                 }
                 stage("Test") {
@@ -41,7 +42,7 @@ pipeline {
         }
         post {
             always {
-                sh 'docker rm -f ${DB_ENGINE}'
+                sh 'docker rm -f ${POSTGRES_HOST}'
             }
         }
  }

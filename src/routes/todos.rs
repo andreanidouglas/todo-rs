@@ -2,6 +2,7 @@ use actix_web::{post, web, HttpResponse, Responder};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -10,9 +11,34 @@ pub struct Todo {
     pub completed: bool,
 }
 
+#[tracing::instrument(
+    name = "Adding new todo",
+    skip(item, pool),
+    fields(
+        request_id = %Uuid::new_v4(),
+        todo_name = %item.name,
+        todo_completed = %item.completed
+    )
+)]
 #[post("/api/todos")]
 pub async fn new_todos(item: web::Json<Todo>, pool: web::Data<PgPool>) -> impl Responder {
-    match sqlx::query!(
+    match insert_todo(&pool, &item).await {
+        Ok(_) => HttpResponse::Ok().finish(),
+        Err(_) => HttpResponse::InternalServerError().finish(),
+    }
+}
+
+#[tracing::instrument(
+    name = "Saving new todo details in the database",
+    skip(item, pool),
+    fields(
+        request_id = %Uuid::new_v4(),
+        todo_name = %item.name,
+        todo_completed = %item.completed
+    )
+)]
+pub async fn insert_todo(pool: &PgPool, item: &web::Json<Todo>) -> Result<(), sqlx::Error> {
+    sqlx::query!(
         r#"
         INSERT INTO todos (id, name, completed, created_at)
         VALUES ($1, $2, $3, $4)
@@ -22,13 +48,12 @@ pub async fn new_todos(item: web::Json<Todo>, pool: web::Data<PgPool>) -> impl R
         item.completed,
         Utc::now(),
     )
-    .execute(pool.get_ref())
+    .execute(pool)
     .await
-    {
-        Ok(_) => HttpResponse::Ok().finish(),
-        Err(e) => {
-            println!("failed to execute query: {}", e);
-            HttpResponse::InternalServerError().finish()
-        }
-    }
+    .map_err(|e| {
+        tracing::error!("Failed to execute query: {:?}", e);
+        e
+    })?;
+
+    Ok(())
 }
