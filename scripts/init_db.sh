@@ -14,7 +14,6 @@ if ! [ -x "$(command -v sqlx)" ]; then
 fi
 
 DB_NETWORK="${DOCKER_NETWORK:=default}"
-# DB_NAME=${DOCKER_NAME:=pg}
 DB_USER=${POSTGRES_USER:=postgres}
 DB_PASSWORD="${POSTGRES_PASSWORD:=password}"
 DB_NAME="${POSTGRES_DB:=todo}"
