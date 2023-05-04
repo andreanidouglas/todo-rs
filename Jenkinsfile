@@ -12,6 +12,7 @@ pipeline {
                 stage("DB_setup") {
                     steps {
                         sh '/home/jenkins/.cargo/bin/cargo install sqlx-cli'
+                        sh '/home/jenkins/.cargo/bin/cargo sqlx prepare --check -- --bin todo-rust'
                         sh './scripts/init_db.sh'
                     }
                 }
