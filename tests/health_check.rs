@@ -1,6 +1,7 @@
 use std::net::TcpListener;
 
 use once_cell::sync::Lazy;
+use secrecy::ExposeSecret;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use todo_rust::{
     configuration::{get_configuration, DatabaseSettings},
@@ -65,7 +66,7 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
         .await
         .expect("failed to create database");
 
-    let connection_pool = PgPool::connect(&config.connection_string())
+    let connection_pool = PgPool::connect(&config.connection_string().expose_secret())
         .await
         .expect("failed to connect to postgres");
 

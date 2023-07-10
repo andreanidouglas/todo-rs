@@ -1,0 +1,18 @@
+{
+  "db": "PostgreSQL",
+  "77f345df9720044569c87f756f9459883ccc0e88e130277793b89ef174782c9a": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Uuid",
+          "Text",
+          "Bool",
+          "Timestamptz"
+        ]
+      }
+    },
+    "query": "\n        INSERT INTO todos (id, name, completed, created_at)\n        VALUES ($1, $2, $3, $4)\n    "
+  }
+}
