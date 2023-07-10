@@ -17,6 +17,7 @@ RUN cargo build --release --bin todo-rust
 
 # Copy binary to basic image and prepare it for execution
 FROM debian:bullseye as runtime
+LABEL org.opencontainers.image.source https://github.com/andreanidouglas/todo-rs
 WORKDIR /app
 RUN apt-get update && \
     apt-get install -y --no-install-recommends openssl ca-certificates && \
