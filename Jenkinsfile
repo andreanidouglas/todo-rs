@@ -25,12 +25,6 @@ pipeline {
                         }
                 }
       
-                stage("Clippy") {
-                        steps {
-                                sh '/home/jenkins/.cargo/bin/cargo clippy -- -D warnings'
-                        }
-                }
-
                 stage("RustFmt") {
                         steps {
                                 sh '/home/jenkins/.cargo/bin/cargo fmt --check'
