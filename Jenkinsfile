@@ -4,9 +4,7 @@ pipeline {
         }
 
         environment {
-                POSTGRES_HOST = 'pg'
                 DOCKER_BUILD = 'true'
-                DOCKER_NETWORK = 'jenkins-agent_default'
                 GITHUB_TOKEN = credentials('github-token')
                 IMAGE_NAME='andreanidouglas/todo-rs'
                 IMAGE_VERSION='latest'
