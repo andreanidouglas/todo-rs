@@ -1,5 +1,7 @@
 pipeline {
-        agent any
+        agent {
+            label 'azure'
+        }
 
         environment {
                 POSTGRES_HOST = 'pg'
