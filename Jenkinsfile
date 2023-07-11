@@ -16,26 +16,26 @@ pipeline {
 
                 stage("DB_setup") {
                     steps {
-                        sh '/home/jenkins/.cargo/bin/cargo install sqlx-cli'
+                        sh 'cargo install sqlx-cli'
                         sh './scripts/init_db.sh'
-                        sh '/home/jenkins/.cargo/bin/cargo sqlx prepare --check -- --bin todo-rust'
+                        sh 'cargo sqlx prepare --check -- --bin todo-rust'
                     }
                 }
                 stage("Test") {
                         steps {
-                                sh '/home/jenkins/.cargo/bin/cargo test'
+                                sh 'cargo test'
                         }
                 }
       
                 stage("RustFmt") {
                         steps {
-                                sh '/home/jenkins/.cargo/bin/cargo fmt --check'
+                                sh 'cargo fmt --check'
                         }
                 }
 
                 stage("Build") {
                         steps {
-                                sh '/home/jenkins/.cargo/bin/cargo build --release'
+                                sh 'cargo build --release'
                         }
                 }
 
