@@ -8,6 +8,8 @@ pipeline {
                 GITHUB_TOKEN = credentials('github-token')
                 IMAGE_NAME='andreanidouglas/todo-rs'
                 IMAGE_VERSION='latest'
+                POSTGRES_HOST='pg'
+                DOCKER_NETWORK='jenkins-agent_default'
         }
 
         stages  {
