@@ -16,11 +16,11 @@ ENV SQLX_OFFLINE true
 RUN cargo build --release --bin todo-rust
 
 # Copy binary to basic image and prepare it for execution
-FROM debian:bullseye as runtime
+FROM debian:bookworm as runtime
 LABEL org.opencontainers.image.source https://github.com/andreanidouglas/todo-rs
 WORKDIR /app
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends openssl ca-certificates && \
+    apt-get install -y --no-install-recommends openssl ca-certificates libc6 libc6-dev && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
