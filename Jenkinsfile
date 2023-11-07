@@ -1,6 +1,6 @@
 pipeline {
         agent {
-            label 'azure'
+            label 'rust'
         }
 
         environment {
