@@ -39,12 +39,6 @@ pipeline {
                         }
                 }
 
-                stage("Docker prune") {
-                        steps {
-                            sh 'docker system prune -a --volumes --force'
-                        }
-                }
-
                 stage("Docker build") {
                         steps {
                             sh 'docker build -t $IMAGE_NAME:$IMAGE_VERSION .'
