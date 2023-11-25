@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+
+  database:
+    image: postgres:16-bookworm
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=todo
+
+  setup:
+    image: rust:1-bookworm
+    environment:
+      - SKIP_DOCKER=true
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=todo
+      - DB_PORT=5432
+      - DB_HOST=database
+    depends_on:
+      - database
+    entrypoint: ["bash", "-c", "cargo install sqlx;", "./scripts/init_db"]
+
+  todo-rs:
+    image: ghcr.io/andreanidouglas/todo-rs:latest
+    ports:
+      - "8000:8000"
+    links:
+      - database
+    depends_on:
+      - database
+      - setup
+    environment:
+      - APP_ENVIRONMENT=production
