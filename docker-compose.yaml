@@ -13,25 +13,30 @@ services:
 
   setup:
     image: rust:1-bookworm
+    volumes:
+      - ./:/data/
     environment:
       - SKIP_DOCKER=true
-      - DB_USER=postgres
-      - DB_PASSWORD=password
-      - DB_NAME=todo
-      - DB_PORT=5432
-      - DB_HOST=database
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=todo
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=database
+      - DATABASE_URL=postgres://postgres:password@database/todo
     depends_on:
       - database
-    entrypoint: ["bash", "-c", "cargo install sqlx;", "./scripts/init_db"]
+    entrypoint: ["bash", "-c", "cargo install sqlx-cli --no-default-features --features postgres && ls -lap /data/migrations && sqlx migrate run --source /data/migrations/"]
 
   todo-rs:
     image: ghcr.io/andreanidouglas/todo-rs:latest
     ports:
-      - "8000:8000"
+      - "8000:32102"
     links:
       - database
     depends_on:
-      - database
-      - setup
+      database:
+        condition: service_started
+      setup:
+        condition: service_completed_successfully
     environment:
       - APP_ENVIRONMENT=production
