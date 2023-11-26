@@ -25,12 +25,12 @@ services:
       - DATABASE_URL=postgres://postgres:password@database/todo
     depends_on:
       - database
-    entrypoint: ["bash", "-c", "cargo install sqlx-cli --no-default-features --features postgres && ls -lap /data/migrations && sqlx migrate run --source /data/migrations/"]
+    entrypoint: ["bash", "-c", "cargo install sqlx-cli --no-default-features --features postgres && sqlx migrate run --source /data/migrations/"]
 
   todo-rs:
     image: ghcr.io/andreanidouglas/todo-rs:latest
     ports:
-      - "8000:32102"
+      - "32100:8000"
     links:
       - database
     depends_on:
@@ -40,3 +40,9 @@ services:
         condition: service_completed_successfully
     environment:
       - APP_ENVIRONMENT=production
+      - APP_DATABASE__USERNAME=${DATABASE_USER}
+      - APP_DATABASE__PASSWORD=${DATABASE_PASSWORD}
+      - APP_DATABASE__HOST=${DATABASE_HOSTNAME}
+      - APP_DATABASE__PORT=${DATABASE_PORT}
+      - APP_DATABASE__DATABASE_NAME=${DATABASE_NAME}
+
