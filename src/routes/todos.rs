@@ -8,6 +8,7 @@ use uuid::Uuid;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Todo {
     pub name: String,
+    pub email: String,
     pub completed: bool,
 }
 
@@ -17,6 +18,7 @@ pub struct Todo {
     fields(
         request_id = %Uuid::new_v4(),
         todo_name = %item.name,
+        todo_email = %item.email,
         todo_completed = %item.completed
     )
 )]
@@ -34,17 +36,19 @@ pub async fn new_todos(item: web::Json<Todo>, pool: web::Data<PgPool>) -> impl R
     fields(
         request_id = %Uuid::new_v4(),
         todo_name = %item.name,
+        todo_email, %item.email,
         todo_completed = %item.completed
     )
 )]
 pub async fn insert_todo(pool: &PgPool, item: &web::Json<Todo>) -> Result<(), sqlx::Error> {
     sqlx::query!(
         r#"
-        INSERT INTO todos (id, name, completed, created_at)
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO todos (id, name, email, completed, created_at)
+        VALUES ($1, $2, $3, $4, $5)
     "#,
         Uuid::new_v4(),
         item.name,
+        item.email,
         item.completed,
         Utc::now(),
     )

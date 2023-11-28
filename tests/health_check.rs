@@ -99,7 +99,15 @@ async fn post_todo_returns_400_if_data_is_missing() {
 
     let test_cases = vec![
         ("\"completed\": true}", "missing item"),
-        ("{\"item\": \"error test case\"}", "missing completed"),
+        ("{\"name\": \"error test case\"}", "missing completed"),
+        (
+            "{\"email\": \"error missing email\"}",
+            "missing name and completed",
+        ),
+        (
+            "{\"name\": \"error missing email\", \"completed\": true}",
+            "missing email",
+        ),
         ("{}", "missing item and completed"),
     ];
 
@@ -126,7 +134,7 @@ async fn post_todo_returns_200_for_valid_data() {
     let app = spawn_app().await;
     let client = reqwest::Client::new();
 
-    let body = "{\"name\": \"ok test case\", \"completed\": true}";
+    let body = "{\"name\": \"ok test case\", \"completed\": true, \"email\": \"email@email.com\"}";
 
     let response = client
         .post(&format!("{}/api/todos", &app.address))
@@ -138,7 +146,7 @@ async fn post_todo_returns_200_for_valid_data() {
 
     assert_eq!(200, response.status().as_u16());
 
-    let saved = sqlx::query!("SELECT name, completed from todos",)
+    let saved = sqlx::query!("SELECT name, email, completed from todos",)
         .fetch_one(&app.db_pool)
         .await
         .expect("failed to fetch saved todo");
