@@ -1,6 +1,6 @@
 {
   "db": "PostgreSQL",
-  "77f345df9720044569c87f756f9459883ccc0e88e130277793b89ef174782c9a": {
+  "de51d68a551ed11f5b6339a5404a7f02d341c249be584c812dce6a16fe160110": {
     "describe": {
       "columns": [],
       "nullable": [],
@@ -8,11 +8,12 @@
         "Left": [
           "Uuid",
           "Text",
+          "Text",
           "Bool",
           "Timestamptz"
         ]
       }
     },
-    "query": "\n        INSERT INTO todos (id, name, completed, created_at)\n        VALUES ($1, $2, $3, $4)\n    "
+    "query": "\n        INSERT INTO todos (id, name, email, completed, created_at)\n        VALUES ($1, $2, $3, $4, $5)\n    "
   }
 }
