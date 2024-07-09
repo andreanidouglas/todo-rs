@@ -40,6 +40,7 @@ pub async fn new_todos(item: web::Json<Todo>, pool: web::Data<PgPool>) -> impl R
         todo_completed = %item.completed
     )
 )]
+
 pub async fn insert_todo(pool: &PgPool, item: &web::Json<Todo>) -> Result<(), sqlx::Error> {
     sqlx::query!(
         r#"

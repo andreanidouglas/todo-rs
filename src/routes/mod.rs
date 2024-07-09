@@ -1,4 +1,4 @@
-mod health_check;
+pub mod health_check;
 mod todos;
 
 pub use health_check::*;

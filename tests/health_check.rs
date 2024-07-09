@@ -152,5 +152,5 @@ async fn post_todo_returns_200_for_valid_data() {
         .expect("failed to fetch saved todo");
 
     assert_eq!("ok test case", saved.name);
-    assert_eq!(true, saved.completed);
+    assert!(saved.completed);
 }
